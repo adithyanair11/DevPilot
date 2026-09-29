@@ -23,11 +23,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final GithubOauth2UserService gitHubOAuth2UserService;
-    private final AuthenticationSuccessHandler oauth2SucessHandler;
-    private final AuthenticationFailureHandler oauth2FailureHandler;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, @Value("${app.frontend-url}") String frontendUrl)
+            throws Exception {
+        AuthenticationSuccessHandler oauth2SucessHandler = oauth2SucessHandler(frontendUrl);
+        AuthenticationFailureHandler oauth2FailureHandler = oauth2FailureHandler(frontendUrl);
         http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(
@@ -44,15 +45,13 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    AuthenticationSuccessHandler oauth2SucessHandler(@Value("${app.frontend-url}") String frontendUrl) {
+    AuthenticationSuccessHandler oauth2SucessHandler(String frontendUrl) {
         SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
         handler.setDefaultTargetUrl(frontendUrl + "/auth/callback");
         return handler;
     }
 
-    @Bean
-    AuthenticationFailureHandler oauth2FailureHandler(@Value("${app.frontend-url}") String frontendUrl) {
+    AuthenticationFailureHandler oauth2FailureHandler(String frontendUrl) {
         SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler();
         handler.setDefaultFailureUrl(frontendUrl + "/login?error=oauth_failed");
         return handler;
