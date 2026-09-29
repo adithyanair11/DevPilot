@@ -27,7 +27,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID Id;
+    private UUID id;
 
     @Column(name = "github_id", unique = true, nullable = false)
     private long githubId;
