@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import QueryProvider from "@/components/providers/query-provider";
+import { Toaster } from "@/components/ui/toast";
 
 const sourceSans3Heading = Source_Sans_3({ subsets: ['latin'], variable: '--font-heading' });
 
@@ -40,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <Toaster>{children}</Toaster>
           </ThemeProvider>
         </QueryProvider>
 

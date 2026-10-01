@@ -1,14 +1,6 @@
 "use client"
 
-import { FolderGit2Icon } from "lucide-react"
-
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
+import { RepoDashboard } from "@/components/repos/repo-dashboard"
 import { useCurrentUser } from "@/hooks/use-auth"
 
 export default function DashboardPage() {
@@ -26,18 +18,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Placeholder until the repositories API and UI are built. */}
-      <Empty className="border">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <FolderGit2Icon />
-          </EmptyMedia>
-          <EmptyTitle>Your repositories will show up here</EmptyTitle>
-          <EmptyDescription>
-            Repository browsing and indexing are coming next.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <RepoDashboard />
     </div>
   )
 }

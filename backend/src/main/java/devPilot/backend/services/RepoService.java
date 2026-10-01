@@ -3,7 +3,9 @@ package devPilot.backend.services;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -33,9 +35,11 @@ public class RepoService {
         List<Map<String, Object>> remoteRepos = githubApiClient.listUserRepos(token);
 
         List<Repository> saved = new ArrayList<>();
+        Set<Long> remoteIds = new HashSet<>();
 
        for(Map<String, Object> remote : remoteRepos){
         Long githubRepoId = toLong(remote.get("id"));
+        remoteIds.add(githubRepoId);
         Repository repo = repositoryRepository
                 .findByUserIdAndGithubRepoId(userId, githubRepoId)
                 .orElseGet(Repository::new);
@@ -52,6 +56,7 @@ public class RepoService {
         repo.setDefaultBranch(remote.get("default_branch") != null ? String.valueOf(remote.get("default_branch")) : "main");
         repo.setLanguage(remote.get("language") != null ? String.valueOf(remote.get("language")) : null);
         repo.setHtmlUrl(remote.get("html_url") != null ? String.valueOf(remote.get("html_url")) : null);
+        repo.setDescription(remote.get("description") != null ? String.valueOf(remote.get("description")) : null);
         repo.setUpdatedAt(Instant.now());
         if(repo.getOwner() == null || repo.getOwner().isBlank()){
             Object ownerObj = remote.get("owner");
@@ -61,12 +66,19 @@ public class RepoService {
         }
         saved.add(repositoryRepository.save(repo));
        }
+
+       // Remove repositories that were deleted on GitHub or the user lost access to.
+       List<Repository> stale = repositoryRepository.findByUserId(userId).stream()
+               .filter(r -> !remoteIds.contains(r.getGithubRepoId()))
+               .toList();
+       repositoryRepository.deleteAll(stale);
+
        return saved.stream().sorted((a,b) -> a.getFullName().compareToIgnoreCase(b.getFullName())).map(this::toResponse).toList();
     }
 
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<RepositoryResponse> listStored(UUID userId){
-        return repositoryRepository.findByUserIdOrderByFullNameAcc(userId).stream().map(this::toResponse).toList();
+        return repositoryRepository.findByUserIdOrderByFullNameAsc(userId).stream().map(this::toResponse).toList();
     }
 
     @org.springframework.transaction.annotation.Transactional(readOnly = true)

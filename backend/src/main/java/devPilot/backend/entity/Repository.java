@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -62,7 +63,7 @@ public class Repository {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated 
+    @Enumerated(EnumType.STRING)
     @Column(name="index_status", nullable = false, length = 20)
     @Builder.Default
     private IndexStatus indexStatus = IndexStatus.PENDING;
