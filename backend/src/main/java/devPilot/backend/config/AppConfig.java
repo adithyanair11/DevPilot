@@ -29,5 +29,17 @@ public class AppConfig {
         executor.initialize();
         return executor;
     }
+
+    /** Runs retrieval + streaming for chat answers so request threads are freed immediately. */
+    @Bean(name = "chatExecutor")
+    Executor chatExecutor(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(4);
+        executor.setMaxPoolSize(16);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("chat-");
+        executor.initialize();
+        return executor;
+    }
     
 }

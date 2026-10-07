@@ -1,6 +1,7 @@
 package devPilot.backend.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,7 +33,9 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/api/auth/login-url", "/oauth2/**", "/login/oauth2/**", "/error")
+                        // SSE responses finish on an ASYNC dispatch; the original request was already authorized.
+                        auth -> auth.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+                                .requestMatchers("/api/auth/login-url", "/oauth2/**", "/login/oauth2/**", "/error")
                                 .permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/api/**").authenticated().anyRequest().permitAll())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
