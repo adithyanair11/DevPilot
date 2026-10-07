@@ -2,8 +2,9 @@
 
 import Link from "next/link"
 import { formatDistanceToNow } from "date-fns"
-import { ExternalLinkIcon, GitBranchIcon, GlobeIcon, LockIcon } from "lucide-react"
+import { ExternalLinkIcon, GitBranchIcon, GlobeIcon, LockIcon, MessageSquareTextIcon } from "lucide-react"
 
+import { buttonVariants } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IndexButton } from "@/components/repos/index-button"
@@ -97,7 +98,14 @@ export function RepoCard({ repo }: { repo: Repository }) {
                 <span className="sr-only">(opens {repo.fullName} in a new tab)</span>
               </a>
             )}
-            {repo.indexStatus !== "INDEXING" && <IndexButton repo={repo} />}
+            {repo.indexStatus === "READY" ? (
+              <Link href={`/repos/${repo.id}/chat`} className={buttonVariants({ size: "sm" })}>
+                <MessageSquareTextIcon />
+                Chat
+              </Link>
+            ) : (
+              repo.indexStatus !== "INDEXING" && <IndexButton repo={repo} />
+            )}
           </div>
         </div>
       </div>

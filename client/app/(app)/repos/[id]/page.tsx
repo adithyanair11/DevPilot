@@ -10,6 +10,7 @@ import {
   GitBranchIcon,
   GlobeIcon,
   LockIcon,
+  MessageSquareTextIcon,
 } from "lucide-react"
 
 import { buttonVariants } from "@/components/ui/button"
@@ -151,7 +152,15 @@ function IndexPanel({ repo }: { repo: Repository }) {
                   : "Not indexed yet. Indexing reads the code and makes it searchable."}
           </p>
         </div>
-        {repo.indexStatus !== "INDEXING" && <IndexButton repo={repo} size="default" />}
+        <div className="flex flex-wrap items-center gap-2">
+          {repo.indexStatus !== "INDEXING" && <IndexButton repo={repo} size="default" />}
+          {repo.indexStatus === "READY" && (
+            <Link href={`/repos/${repo.id}/chat`} className={buttonVariants()}>
+              <MessageSquareTextIcon />
+              Ask questions
+            </Link>
+          )}
+        </div>
       </div>
 
       {repo.indexStatus === "INDEXING" && <IndexProgress repo={repo} />}
