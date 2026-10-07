@@ -68,7 +68,7 @@ public class IndexingService {
         try{
             doIndex(repoId, userId);
         }catch(Exception ex){
-            log.error("Indexing failed for repo ()", repoId, ex);
+            log.error("Indexing failed for repo {}", repoId, ex);
             markFailed(repoId, ex.getMessage());
         }
     }
@@ -106,7 +106,7 @@ public class IndexingService {
                     batch.clear();
                 }
             }catch(Exception ex){
-                log.warn("Skipping file {} in {}: {}", path, repo.getFullName());
+                log.warn("Skipping file {} in {}: {}", path, repo.getFullName(), ex.getMessage());
             }
 
             processed++;
@@ -118,7 +118,7 @@ public class IndexingService {
             rateLimiter.pause();
         }
 
-        if(batch.isEmpty()){
+        if(!batch.isEmpty()){
             vectorStore.add(batch);
         }
 
